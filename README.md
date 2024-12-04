@@ -3,7 +3,7 @@
 ## Steps to follow before starting the project
 - ### Clone the repo
   ```shell
-  git clone https://github.com/KanishkRastogi46/autodev-backend
+  git clone https://github.com/KanishkRastogi46/autodev-backend.git
   ```
 - ### Create virtual environment
   ```shell
@@ -27,6 +27,9 @@
 - Your app is running on port 8000
 
 
-## Users route ("/users")
-1. ### "/"- for getting all users
-2. ### "/register"- for registering users
+## Users 
+- ### route ("/users")
+  1. ### "/"- for getting all users
+  2. ### "/register"- for registering users
+- ### model
+  1. ### Users model
