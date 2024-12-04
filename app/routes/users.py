@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends
 
 from app.model import User
-from app.schema import Users
+from app.schema import Users, ChatResponse, Prompt
 from . import get_db
 from app.chat import get_response
 
@@ -24,7 +24,7 @@ async def register(user: Users, db: Annotated[Session, Depends(get_db)])->str:
     except Exception as e:
         return str(e)
     
-@user_router.post("/chat")
-async def chat(prompt: str)->str:
-    res : str = get_response(prompt)
+@user_router.post("/chat", response_model=ChatResponse)
+async def chat(prompt: Prompt):
+    res : ChatResponse = get_response(prompt.prompt)
     return res
