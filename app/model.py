@@ -10,3 +10,13 @@ class User(Base):
     email = Column(String(255), unique=True, index=True)
     password = Column(String(100), nullable=False)
     profile_img = Column(Text(), nullable=True)
+    is_active = Column(Boolean, default=False)
+    chats = relationship("Chat", back_populates="users")
+    
+class Chat(Base):
+    __tablename__= "chats"
+    id = Column(Integer, primary_key=True, index=True)
+    prompt = Column(Text())
+    response = Column(Text())
+    user_id = Column(Integer, ForeignKey("users.id"))
+    users = relationship("User", back_populates="chats")
