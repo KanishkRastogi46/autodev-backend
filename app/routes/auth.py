@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException,status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated
 from sqlalchemy.orm import Session
@@ -17,7 +17,7 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @router.post("/token", response_model=LoginResponse)
-async def login(form_data: LoginForm, db: Annotated[Session, Depends(get_db)]):
+async def login(form_data: LoginForm, db: Annotated[Session, Depends(get_db)], response: Response):
     user_exists = await authenticate_user(db, form_data.email, form_data.password)
     if not user_exists:
         raise HTTPException(
@@ -27,6 +27,7 @@ async def login(form_data: LoginForm, db: Annotated[Session, Depends(get_db)]):
         )
     else:
         encoded = create_access_token(user_data={"sub": user_exists.get("email")}, expires_delta=timedelta(minutes=int(os.getenv("EXPIRY_TIME"))))
+        response.set_cookie(key="accesstoken", value=encoded, httponly=True)
         return LoginResponse(
             message="Login successfull", 
             user= SendUser(email=user_exists.get("email")), 

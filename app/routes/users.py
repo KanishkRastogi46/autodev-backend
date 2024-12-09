@@ -38,6 +38,12 @@ async def register(user: UserRegister, db: Annotated[Session, Depends(get_db)]):
 async def chat(prompt: Prompt):
     try:
         res = get_response(prompt.prompt)
-        return {"message": res, "success": True}
+        return ChatResponse(
+            Language=res.get("Language"),
+            Code=res.get("Code"),
+            Explanation=res.get("Explanation"),
+            Note=res.get("Note"),
+            success=True
+        )
     except HTTPException as e:
-        return {"message": str(e), "success": False}
+        return ChatError(message= str(e), success= False)
