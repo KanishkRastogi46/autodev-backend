@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
 from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated
 from sqlalchemy.orm import Session
@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 from app.schema import LoginForm, LoginResponse, SendUser
 from app import get_db
-from app.auth.auth_handler import authenticate_user, create_access_token
+from app.auth.auth_handler import authenticate_user, create_access_token, get_current_user
 
 load_dotenv()
 
@@ -27,11 +27,38 @@ async def login(form_data: LoginForm, db: Annotated[Session, Depends(get_db)], r
         )
     else:
         encoded = create_access_token(user_data={"sub": user_exists.get("email")}, expires_delta=timedelta(minutes=int(os.getenv("EXPIRY_TIME"))))
-        response.set_cookie(key="accesstoken", value=encoded, httponly=True)
+        response.set_cookie(key="accesstoken", value=encoded, httponly=True, domain="http://127.0.0.1:3000", path="/")
         return LoginResponse(
             message="Login successfull", 
             user= SendUser(email=user_exists.get("email")), 
             access_token=encoded, 
             token_type="Bearer", 
             success= True
+        )
+        
+        
+@router.get("/", response_model=SendUser)
+async def protected_route(req: Request, db: Session = Depends(get_db)):
+    print(req.headers.get("authorization").split(" ")[1])
+    if req.cookies.get("accesstoken") is not None:
+        token = req.cookies.get("accesstoken")
+        user = await get_current_user(token, db)
+        print(user)
+        return SendUser(
+            email= user.email,
+            profile= user.profile_img
+        )
+        
+    if req.headers.get("authorization") is not None:
+        token = req.headers.get("authorization").split(" ")[1]
+        user = await get_current_user(token, db)
+        print(user.email, user.profile_img)
+        return SendUser(
+            email= user.email,
+            profile= user.profile_img
+        )
+    raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user details",
+            headers={"WWW-Authenticate": "Bearer"}
         )

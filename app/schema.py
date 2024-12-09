@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 class SendUser(BaseModel):
     email: str
-    profile: str = ""
+    profile: str | None = None
 
 class UserRegister(BaseModel):
     fullname: str | None = None

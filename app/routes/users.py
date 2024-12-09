@@ -29,7 +29,7 @@ async def register(user: UserRegister, db: Annotated[Session, Depends(get_db)]):
         new_user = User(fullname=user.fullname, email=user.email, password=hashed_password)
         db.add(new_user)
         db.commit()
-        return RegisterResponse(message="Created user {new_user.email}", success= True)
+        return RegisterResponse(message=f"Created user {new_user.email}", success= True)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
