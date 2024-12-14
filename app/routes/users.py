@@ -1,12 +1,12 @@
 from typing import Annotated, Union
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from app.model import User
 from app.schema import UserRegister, ChatResponse, Prompt, ChatError, RegisterResponse
 from app import get_db
 from app.chat import get_response
-from app.auth.auth_handler import hash_password
+from app.auth.auth_handler import hash_password, get_current_user
 
 user_router = APIRouter()
 
@@ -35,7 +35,16 @@ async def register(user: UserRegister, db: Annotated[Session, Depends(get_db)]):
     
 
 @user_router.post("/chat", response_model= Union[ChatResponse, ChatError])
-async def chat(prompt: Prompt):
+async def chat(prompt: Prompt, req: Request, db: Session= Depends(get_db)):
+    if not req.headers["authorization"].split(" ")[1]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+    token = req.headers["authorization"].split(" ")[1]
+    await get_current_user(token, db)
+        
     try:
         res = get_response(prompt.prompt)
         return ChatResponse(

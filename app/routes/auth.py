@@ -27,7 +27,7 @@ async def login(form_data: LoginForm, db: Annotated[Session, Depends(get_db)], r
         )
     else:
         encoded = create_access_token(user_data={"sub": user_exists.get("email")}, expires_delta=timedelta(minutes=int(os.getenv("EXPIRY_TIME"))))
-        response.set_cookie(key="accesstoken", value=encoded, httponly=True, domain="http://127.0.0.1:3000", path="/")
+        response.set_cookie(key="accesstoken", value=encoded, httponly=True, domain="http://127.0.0.1:3000")
         return LoginResponse(
             message="Login successfull", 
             user= SendUser(email=user_exists.get("email")), 
@@ -39,7 +39,7 @@ async def login(form_data: LoginForm, db: Annotated[Session, Depends(get_db)], r
         
 @router.get("/", response_model=SendUser)
 async def protected_route(req: Request, db: Session = Depends(get_db)):
-    print(req.headers.get("authorization").split(" ")[1])
+    print(req.headers.get("authorization"))
     if req.cookies.get("accesstoken") is not None:
         token = req.cookies.get("accesstoken")
         user = await get_current_user(token, db)
