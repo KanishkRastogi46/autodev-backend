@@ -1,7 +1,8 @@
 import uvicorn
 
 from fastapi import Depends, FastAPI, Request, UploadFile, status, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import os
 import google.generativeai as genai
@@ -26,19 +27,24 @@ def get_db():
         db.close()
         raise
 
+middleware = [
+    Middleware(
+        CORSMiddleware,
+        allow_origins = [os.getenv("FRONTEND_URL")],
+        allow_credentials = True,
+        allow_methods = ["*"],
+        allow_headers= ["*"],
+    )
+]
 
-app = FastAPI()
+app = FastAPI(middleware=middleware)
 app.include_router(user_router, prefix="/users")
 app.include_router(router, prefix="/auth")
 
 # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins = [os.getenv("FRONTEND_URL")],
-    allow_credentials = True,
-    allow_methods = ["*"],
-    allow_headers= ["*"],
+    
 )
 
 genai.configure(api_key=os.getenv("GOOGLE_GEMINI_API_KEY"))
