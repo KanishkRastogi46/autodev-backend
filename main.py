@@ -43,9 +43,9 @@ app.include_router(router, prefix="/auth")
 
 # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-app.add_middleware(
+# app.add_middleware(
     
-)
+# )
 
 genai.configure(api_key=os.getenv("GOOGLE_GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-1.5-flash")
@@ -76,5 +76,5 @@ async def sketch_to_code(file: UploadFile, req: Request, db: Session= Depends(ge
             detail="Error while sending image to LLM for getting code response"
         )
 
-if __name__=="__main__":
-    uvicorn.run(app)
+# if __name__=="__main__":
+#     uvicorn.run(app)
