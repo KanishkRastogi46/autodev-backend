@@ -25,9 +25,10 @@ async def login(form_data: LoginForm, db: Annotated[Session, Depends(get_db)], r
             detail="Invalid user details",
             headers={"WWW-Authenticate": "Bearer"}
         )
+    
     else:
         encoded = create_access_token(user_data={"sub": user_exists.get("email")}, expires_delta=timedelta(minutes=int(os.getenv("EXPIRY_TIME"))))
-        response.set_cookie(key="accesstoken", value=encoded, httponly=True, domain="http://127.0.0.1:3000")
+        response.set_cookie(key="accesstoken", value=encoded, httponly=True, domain=os.getenv("FRONTEND_URL"))
         return LoginResponse(
             message="Login successfull", 
             user= SendUser(email=user_exists.get("email")), 
@@ -39,11 +40,11 @@ async def login(form_data: LoginForm, db: Annotated[Session, Depends(get_db)], r
         
 @router.get("/", response_model=SendUser)
 async def protected_route(req: Request, db: Session = Depends(get_db)):
-    print(req.headers.get("authorization"))
+    # print(req.headers.get("authorization"))
     if req.cookies.get("accesstoken") is not None:
         token = req.cookies.get("accesstoken")
         user = await get_current_user(token, db)
-        print(user)
+        # print(user)
         return SendUser(
             email= user.email,
             profile= user.profile_img
@@ -52,7 +53,7 @@ async def protected_route(req: Request, db: Session = Depends(get_db)):
     if req.headers.get("authorization") is not None:
         token = req.headers.get("authorization").split(" ")[1]
         user = await get_current_user(token, db)
-        print(user.email, user.profile_img)
+        # print(user.email, user.profile_img)
         return SendUser(
             email= user.email,
             profile= user.profile_img

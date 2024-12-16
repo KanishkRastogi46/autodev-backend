@@ -22,10 +22,11 @@ model = genai.GenerativeModel(
 
 def get_response(prompt: str):
     response = model.generate_content(prompt)
+    # print(response.text)
     arr = response.text.split("\n")
     res = f""
     for txt in arr[1 : len(arr)-2]:
         res = res + txt + "\n"
     res = json.loads(res)
-    print(res["Code"])
+    # print(res["Code"])
     return res

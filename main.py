@@ -35,7 +35,7 @@ app.include_router(router, prefix="/auth")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = ['http://localhost:3000'],
+    allow_origins = [os.getenv("FRONTEND_URL")],
     allow_credentials = True,
     allow_methods = ["*"],
     allow_headers= ["*"],
@@ -60,7 +60,7 @@ async def sketch_to_code(file: UploadFile, req: Request, db: Session= Depends(ge
         image = PIL.Image.open(io.BytesIO(image_bytes))
         image.save("uploads/" + file.filename)
         response = model.generate_content(["Convert the image into HTML, CSS and JavaScript equivalent code only the frontend or UI not the backend. If the image can't be converted, return 'Failed to process image'. Use internal CSS and Javascript, add proper styling, include all the features, Make the code fully functional.", image])
-        print(response.text)
+        # print(response.text)
         os.remove(f"uploads/{file.filename}")
         os.rmdir("uploads")
         return response.text

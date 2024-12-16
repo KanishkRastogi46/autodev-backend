@@ -31,7 +31,12 @@ async def authenticate_user(db: Session, email: str, password: str)->dict[str,st
     if not find_user_by_email:
         return False
     if not verify_password(password, find_user_by_email.password):
-            return False
+        return False
+    if not find_user_by_email.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email not verified"
+        )
     return {"email": email, "password": password}
 
 

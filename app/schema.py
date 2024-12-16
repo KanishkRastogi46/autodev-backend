@@ -38,3 +38,7 @@ class LoginResponse(BaseModel):
 class LoginForm(BaseModel):
     email: str
     password: str
+    
+class VerifyEmail(BaseModel):
+    email: str
+    code: str
