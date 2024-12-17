@@ -56,7 +56,7 @@ async def register(user: UserRegister, db: Annotated[Session, Depends(get_db)]):
         <html>
             <body>
                 <h1>AutoDev email verification</h1>
-                <div>Click <a href="{os.getenv('FRONTEND_URL')}/verify-email/?email={new_user.email}&code={new_user.verify_code}" target"_blank">here</a> to verify</div>
+                <div>Click <a href="https://autodev-frontend.vercel.app/verify-email/?email={new_user.email}&code={new_user.verify_code}" target"_blank">here</a> to verify</div>
             </body>
         </html>
         """

@@ -28,7 +28,7 @@ async def login(form_data: LoginForm, db: Annotated[Session, Depends(get_db)], r
     
     else:
         encoded = create_access_token(user_data={"sub": user_exists.get("email")}, expires_delta=timedelta(minutes=int(os.getenv("EXPIRY_TIME"))))
-        response.set_cookie(key="accesstoken", value=encoded, httponly=True, domain=os.getenv("FRONTEND_URL"))
+        response.set_cookie(key="accesstoken", value=encoded, httponly=True, domain="https://autodev-frontend.vercel.app")
         return LoginResponse(
             message="Login successfull", 
             user= SendUser(email=user_exists.get("email")), 
