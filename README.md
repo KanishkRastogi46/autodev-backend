@@ -1,4 +1,4 @@
-# Backend for final year project
+# Backend for final year project using FastApi and frontend using Next.js
 
 ## Steps to follow before starting the project
 - ### Clone the repo
@@ -18,7 +18,7 @@
   pip install -r requirements.txt
   ```
 - Create .env file at the root folder
-- Create a MySQL database on cloud and store its credentials in .env file and also download the .pem at the root folder
+- Create a PostgreSQL database on cloud and store its credentials in .env file and also download the .pem at the root folder
 - Also create an API key to integrate Google Gemini Api on [Google ai studio](https://aistudio.google.com/)
 - Run your app using
   ```shell
@@ -33,3 +33,6 @@
   2. ### "/register"- for registering users
 - ### model
   1. ### Users model
+  2. ### Fields- user_id, email, password, profile_pic, is_verified
+
+## For more details about api routes [visit](https://autodev-backend.onrender.com/docs) here
